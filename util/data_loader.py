@@ -16,10 +16,16 @@ class DataLoader:
         self.tokenize_en = tokenize_en
         self.tokenize_de = tokenize_de
         self.init_token = init_token
+        print("init token:", self.init_token)
         self.eos_token = eos_token
+        print("eos token:", self.eos_token)
         print('dataset initializing start')
 
     def make_dataset(self):
+        # Field中init token和eos token是用来在句首和巨尾添加<sos>、<eos>
+        # https://github.com/bentrevett/pytorch-seq2seq/issues/43
+        # 源语句是否需要添加<sos>和<eos>？
+        # 没必要加，但是加了也不影响，因为模型会忽略
         if self.ext == ('.de', '.en'):
             self.source = Field(tokenize=self.tokenize_de, init_token=self.init_token, eos_token=self.eos_token,
                                 lower=True, batch_first=True)
