@@ -107,6 +107,14 @@ def evaluate(model, iterator, criterion):
     batch_bleu = sum(batch_bleu) / len(batch_bleu)
     return epoch_loss / len(iterator), batch_bleu
 
+def test():
+    sentence = "I love cats."
+    field = loader.source
+    tokens = field.preprocess(sentence)
+    tokens = [field.init_token] + tokens + [field.eos_token]
+    numericalized = [field.vocab.stoi[token] for token in tokens]
+    input_ids = torch.tensor(numericalized).unsqueeze(0)  # 添加批次维度
+    print(input_ids)
 
 def run(total_epoch, best_loss):
     train_losses, test_losses, bleus = [], [], []
@@ -144,7 +152,11 @@ def run(total_epoch, best_loss):
         print(f'\tTrain Loss: {train_loss:.3f} | Train PPL: {math.exp(train_loss):7.3f}')
         print(f'\tVal Loss: {valid_loss:.3f} |  Val PPL: {math.exp(valid_loss):7.3f}')
         print(f'\tBLEU Score: {bleu:.3f}')
+        print("saving trained model as dict...")
+        torch.save(model.state_dict(), 'transformer_state_dict_ep' + str(step) + '.pth')
+        print("finish saving...")
 
 
 if __name__ == '__main__':
     run(total_epoch=epoch, best_loss=inf)
+    # test()
